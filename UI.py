@@ -182,6 +182,7 @@ def create_widgets():
     input_player1_name = Entry(root, textvariable=name1_var, width=15, borderwidth=2,
                                bg='white', font=('COMIC SANS MS', 15))
     input_player1_name.grid(row=0, column=1)
+    input_player1_name.insert(0, "Player 1")
 
     # Create the label + input for player 2
     label_player2_name = Label(root, text="Player 2 name: ",
@@ -190,18 +191,12 @@ def create_widgets():
     input_player2_name = Entry(root, textvariable=name2_var, width=15, borderwidth=2,
                                bg='white', font=('COMIC SANS MS', 15))
     input_player2_name.grid(row=1, column=1)
+    input_player2_name.insert(0, "Player 2")
 
     # Create the "start!" button
-    start_btn = Button(root, text='Start!', command=create_board)
+    start_btn = Button(root, text='Start!', font=(
+        'COMIC SANS MS', 15, 'bold'), command=create_board)
     start_btn.grid(row=2, column=1)
-
-    # x = input_player1_name.get()
-    # y = input_player2_name.get()
-
-    # if (x and y):
-    #     start_btn.configure(state=NORMAL)
-    # else:
-    #     start_btn.configure(state=DISABLED)
 
 
 root.mainloop()
