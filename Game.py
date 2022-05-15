@@ -73,9 +73,14 @@ class Game:
                 self.board[0].get() == "O" and self.board[4].get() == "O" and self.board[8].get() == "O" or
                 self.board[2].get() == "O" and self.board[4].get() == "O" and self.board[6].get() == "O"):
             self.buttons_state.set(DISABLED)
-            messagebox.showinfo(
-                "Tic Tac Toe", f'{self.player_2_name.get()} wins')
             self.player_2_score.set(self.player_2_score.get() + 2)
+
+            if(self.is_against_pc.get() == True):
+                messagebox.showinfo(
+                    "Tic Tac Toe", "The coolest PC on earth wins. PATHETIC!")
+            else:
+                messagebox.showinfo(
+                    "Tic Tac Toe", f'{self.player_2_name.get()} wins')
 
         elif(self.isTie()):
             self.buttons_state.set(DISABLED)
@@ -189,6 +194,7 @@ class Game:
 
 
 # Function that creates a new game (scores are set to 0)
+
 
     def newGame(self):
         self.clearBoard()
