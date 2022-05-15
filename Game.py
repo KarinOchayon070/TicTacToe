@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
 from constants import *
+import random
+import time
 
 
 class Game:
@@ -9,6 +11,7 @@ class Game:
 
         # Decleration of the variables
         self.root = root
+        self.is_against_pc = BooleanVar(value=False)
         self.player_1_name = StringVar(value="Player 1")
         self.player_2_name = StringVar(value="Player 2")
         self.player_1_score = IntVar(value=0)
@@ -28,6 +31,13 @@ class Game:
             StringVar(value=" "),
         ]
 
+    def randomStart(self):
+        if(self.is_against_pc.get() == True):
+            if(random.randint(0, 1) == 0):
+                self.pcLogic()
+        elif(random.randint(0, 1) == 0):
+            self.player_turn.set(self.player_2_name.get())
+
     def changePlayerTurn(self):
         if(self.player_turn.get() == self.player_1_name.get()):
             self.player_turn.set(self.player_2_name.get())
@@ -37,14 +47,7 @@ class Game:
 
     # Function that checks if there is a winner - checks if there is a winner (rows, columns, diagonals)
     def checkForWin(self):
-        if(self.isTie()):
-            self.buttons_state.set(DISABLED)
-            self.createBoard()
-            messagebox.showinfo("Tic Tac Toe", "Oh bummer! It's a tie")
-            self.player_1_score.set(self.player_1_score.get() + 1)
-            self.player_2_score.set(self.player_2_score.get() + 1)
-
-        elif (
+        if (
             self.board[0].get() == "X" and self.board[1].get() == "X" and self.board[2].get() == "X" or
             self.board[3].get() == "X" and self.board[4].get() == "X" and self.board[5].get() == "X" or
             self.board[6].get() == "X" and self.board[7].get() == "X" and self.board[8].get() == "X" or
@@ -56,7 +59,6 @@ class Game:
             ) == "X" and self.board[6].get() == "X"
         ):
             self.buttons_state.set(DISABLED)
-            self.createBoard()
             messagebox.showinfo(
                 "Tic Tac Toe", f'{self.player_1_name.get()} wins')
             self.player_1_score.set(self.player_1_score.get() + 2)
@@ -71,10 +73,17 @@ class Game:
                 self.board[0].get() == "O" and self.board[4].get() == "O" and self.board[8].get() == "O" or
                 self.board[2].get() == "O" and self.board[4].get() == "O" and self.board[6].get() == "O"):
             self.buttons_state.set(DISABLED)
-            self.createBoard()
             messagebox.showinfo(
                 "Tic Tac Toe", f'{self.player_2_name.get()} wins')
             self.player_2_score.set(self.player_2_score.get() + 2)
+
+        elif(self.isTie()):
+            self.buttons_state.set(DISABLED)
+            messagebox.showinfo("Tic Tac Toe", "Oh bummer! It's a tie")
+            self.player_1_score.set(self.player_1_score.get() + 1)
+            self.player_2_score.set(self.player_2_score.get() + 1)
+
+        self.createBoard()
 
     def btnClick(self, index):
 
@@ -82,19 +91,76 @@ class Game:
             return messagebox.showinfo(
                 "Tic Tac Toe", "Button already clicked, please try again")
 
-        if self.player_turn.get() == self.player_1_name.get():
+        if(self.player_turn.get() == self.player_1_name.get()):
             self.board[index].set("X")
 
         elif(self.player_turn.get() == self.player_2_name.get()):
             self.board[index].set("O")
 
-        self.changePlayerTurn()
-        # Rerender the board
+        if(self.is_against_pc.get() == False):
+            self.changePlayerTurn()
+
+        else:
+            time.sleep(0.1)
+            self.pcLogic()
+
         self.createBoard()
-        # Constantly check if there is a winner
         self.checkForWin()
 
     # Function that checks if there is a tie - if in one of the wining array there is X and O, this specific combination is a tie and we need to check the next combination
+
+    def pcLogic(self):
+
+        potential_attack_index = -1
+        potential_defend_index = -1
+
+        for array in wins_array:
+            potential_index_to_place = -1
+            amount_of_O = 0
+            amount_of_X = 0
+
+            for cell in array:
+
+                # Start with defence logic
+                if (self.board[cell].get() == "X"):
+                    amount_of_X += 1
+                    # It's enough to have 1 X and the pc can't wins (so no need to "attack")
+
+                if(self.board[cell].get() == "O"):
+                    amount_of_O += 1
+
+                elif(self.board[cell].get() == " "):
+                    # If there is a space I need to save it, because maybe later I will need to place the O in this position ("defense")
+                    potential_index_to_place = cell
+
+                if(amount_of_X == 2):
+                    potential_defend_index = potential_index_to_place
+
+            if(amount_of_O == 2 and amount_of_X == 0):
+                self.board[potential_index_to_place].set("O")
+                return
+
+            if(amount_of_X == 2 and amount_of_O == 0):
+                potential_defend_index = potential_index_to_place
+
+            if(amount_of_O == 1 and amount_of_X == 0):
+                potential_attack_index = potential_index_to_place
+
+        if(potential_defend_index != -1):
+            self.board[potential_defend_index].set("O")
+            return
+
+        if(potential_attack_index != -1):
+            self.board[potential_attack_index].set("O")
+            return
+
+        # If there is no need to defend or attack, randomize the PC choice
+        empty_board = []
+        for index, item in enumerate(self.board):
+            if(item.get() == " "):
+                empty_board.append(index)
+
+        self.board[random.choice(empty_board)].set("O")
 
     def isTie(self):
         is_tie = True
@@ -116,9 +182,11 @@ class Game:
         for cell in self.board:
             cell.set(" ")
         # Buttons are enabled again
+        self.randomStart()
         self.buttons_state.set(NORMAL)
         # Rerender the board
         self.createBoard()
+
 
 # Function that creates a new game (scores are set to 0)
 
@@ -149,18 +217,21 @@ class Game:
         input_player1_name.grid(row=0, column=8)
 
         # Create the label + input for player 2
-        label_player2_name = Label(self.root, text="Player 2 name: ",
+        player_2_name_label = "Coolest PC on earth" if self.is_against_pc.get(
+        ) else "Player 2 name: "
+        label_player2_name = Label(self.root, text=player_2_name_label,
                                    font=('COMIC SANS MS', 15, 'bold'), borderwidth=0, background='white')
         label_player2_name.grid(row=1, column=7)
 
-        input_player2_name = Entry(self.root, textvariable=self.player_2_name, width=10, borderwidth=2,
-                                   bg='white', font=('COMIC SANS MS', 15))
-        input_player2_name.grid(row=1, column=8)
+        if(not self.is_against_pc.get()):
+            input_player2_name = Entry(self.root, textvariable=self.player_2_name, width=10, borderwidth=2,
+                                       bg='white', font=('COMIC SANS MS', 15))
+            input_player2_name.grid(row=1, column=8)
 
-        # Create the label that sets the turn
-        player_turn_label = Label(self.root, textvariable=self.player_turn, width=20, borderwidth=2,
-                                  bg='white', font=('COMIC SANS MS', 15))
-        player_turn_label.grid(row=2, column=8)
+            # Create the label that sets the turn
+            player_turn_label = Label(self.root, textvariable=self.player_turn, width=20, borderwidth=2,
+                                      bg='white', font=('COMIC SANS MS', 15))
+            player_turn_label.grid(row=2, column=8)
 
         # Create the "show score" button
         global show_score_btn_pic
@@ -187,6 +258,7 @@ class Game:
         # Init the row and column
         row = 0
         column = 0
+
         for index, cell in enumerate(self.board):
             button = Button(self.root, text=cell.get(), font=('COMIC SANS MS', 20), state=self.buttons_state.get(),
                             bg='gray', fg='black', height=2, width=5, command=lambda index=index: self.btnClick(index))

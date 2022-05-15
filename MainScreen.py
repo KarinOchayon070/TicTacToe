@@ -21,17 +21,17 @@ class MainScreen (Game):
             widget.destroy()
 
     def humanVShuman(self):
+        self.randomStart()
         self.clearScreen()
-        # Create the users names
         self.createWidgets()
         self.createBoard()
 
     def humanVCpc(self):
-        pass
-        # self.clearScreen()
-        # Create the users names
-        # createWidgets(root)
-        # createBoard()
+        self.is_against_pc.set(True)
+        self.randomStart()
+        self.clearScreen()
+        self.createWidgets()
+        self.createBoard()
 
     def createHomeScreen(self):
         # Import the images (buttons) using PhotoImage function
@@ -42,11 +42,11 @@ class MainScreen (Game):
 
         human_VS_human_but = tk.Button(self.root, image=human_vs_human_image, bg="white",
                                        borderwidth=0, command=self.humanVShuman)
-        human_VS_human_but.grid(row=0, column=0, padx=100, pady=0.01, sticky=S)
+        human_VS_human_but.grid(row=2, column=0, padx=100, pady=0.01, sticky=S)
 
         human_VS_pc_but = tk.Button(self.root, image=human_vs_pc_image, bg="white",
                                     borderwidth=0, command=self.humanVCpc)
-        human_VS_pc_but.grid(row=0, column=1, padx=110, pady=0.01, sticky=S)
+        human_VS_pc_but.grid(row=2, column=1, padx=110, pady=0.01, sticky=S)
 
 
 root = Tk()  # Create the window
