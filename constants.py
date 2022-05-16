@@ -1,4 +1,6 @@
 # Array of winning combinations (p.s - start from 0)
+# This array is used for the PC VS human game.
+
 wins_array = [
     [0, 1, 2],
     [3, 4, 5],
