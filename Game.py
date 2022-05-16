@@ -12,12 +12,19 @@ class Game:
         # Decleration of the variables
         self.root = root
         self.is_against_pc = BooleanVar(value=False)
+
         self.player_1_name = StringVar(value="Player 1")
         self.player_2_name = StringVar(value="Player 2")
         self.player_1_score = IntVar(value=0)
         self.player_2_score = IntVar(value=0)
         self.buttons_state = StringVar(value=NORMAL)
+
+        self.player1 = StringVar(value="Player 1")
+        self.player2 = StringVar(value="Player 2")
+
         self.player_turn = StringVar(value=self.player_1_name.get())
+
+        self.player_turn_change = StringVar(value=self.player_1_name.get())
 
         self.board = [
             StringVar(value=" "),
@@ -31,19 +38,44 @@ class Game:
             StringVar(value=" "),
         ]
 
+    def clearLabel(self):
+
+        # destroy all "label_player_turn" in the root
+        for widget in self.root.winfo_children():
+            if(type(widget) == Label):
+                if(((widget.cget('text') != "Player 1 name: " and widget.cget('text') != "Player 2 name: ")) and (str(widget.cget('text')).isdigit()) == False):
+                    widget.destroy()
+        self.showNames()
+
+    def showNames(self):
+
+        if(not self.is_against_pc.get()):
+
+            input_player2_name = Entry(self.root, textvariable=self.player_2_name, width=10, borderwidth=2,
+                                       bg='white', font=('COMIC SANS MS', 15))
+            input_player2_name.grid(row=1, column=8)
+
+            self.label_player_turn = Label(self.root, text=f"{self.player_turn_change.get()}'s turn",
+                                           font=('COMIC SANS MS', 15, 'bold'), borderwidth=0, background='white')
+            self.label_player_turn.grid(row=2, column=8)
+
     def randomStart(self):
         if(self.is_against_pc.get() == True):
             if(random.randint(0, 1) == 0):
                 self.pcLogic()
         elif(random.randint(0, 1) == 0):
-            self.player_turn.set(self.player_2_name.get())
+            self.player_turn.set(self.player2.get())
+            self.player_turn_change.set(self.player_2_name.get())
 
     def changePlayerTurn(self):
-        if(self.player_turn.get() == self.player_1_name.get()):
-            self.player_turn.set(self.player_2_name.get())
 
-        elif(self.player_turn.get() == self.player_2_name.get()):
-            self.player_turn.set(self.player_1_name.get())
+        if(self.player_turn.get() == self.player1.get()):
+            self.player_turn.set(self.player2.get())
+            self.player_turn_change.set(self.player_2_name.get())
+
+        elif(self.player_turn.get() == self.player2.get()):
+            self.player_turn.set(self.player1.get())
+            self.player_turn_change.set(self.player_1_name.get())
 
     # Function that checks if there is a winner - checks if there is a winner (rows, columns, diagonals)
     def checkForWin(self):
@@ -60,7 +92,7 @@ class Game:
         ):
             self.buttons_state.set(DISABLED)
             messagebox.showinfo(
-                "Tic Tac Toe", f'{self.player_1_name.get()} wins')
+                "Tic Tac Toe", f'{self.player_1_name.get()} wins :)')
             self.player_1_score.set(self.player_1_score.get() + 2)
 
         elif (
@@ -80,7 +112,7 @@ class Game:
                     "Tic Tac Toe", "The coolest PC on earth wins. PATHETIC!")
             else:
                 messagebox.showinfo(
-                    "Tic Tac Toe", f'{self.player_2_name.get()} wins')
+                    "Tic Tac Toe", f'{self.player_2_name.get()} wins :)')
 
         elif(self.isTie()):
             self.buttons_state.set(DISABLED)
@@ -96,10 +128,10 @@ class Game:
             return messagebox.showinfo(
                 "Tic Tac Toe", "Button already clicked, please try again")
 
-        if(self.player_turn.get() == self.player_1_name.get()):
+        if(self.player_turn.get() == self.player1.get()):
             self.board[index].set("X")
 
-        elif(self.player_turn.get() == self.player_2_name.get()):
+        elif(self.player_turn.get() == self.player2.get()):
             self.board[index].set("O")
 
         if(self.is_against_pc.get() == False):
@@ -197,6 +229,7 @@ class Game:
 
 
     def newGame(self):
+        self.player_turn_change.set(self.player1.get())
         self.clearBoard()
         self.player_1_score.set(0)
         self.player_2_score.set(0)
@@ -229,15 +262,15 @@ class Game:
                                    font=('COMIC SANS MS', 15, 'bold'), borderwidth=0, background='white')
         label_player2_name.grid(row=1, column=7)
 
-        if(not self.is_against_pc.get()):
-            input_player2_name = Entry(self.root, textvariable=self.player_2_name, width=10, borderwidth=2,
-                                       bg='white', font=('COMIC SANS MS', 15))
-            input_player2_name.grid(row=1, column=8)
+        # if(not self.is_against_pc.get()):
 
-            # Create the label that sets the turn
-            player_turn_label = Label(self.root, textvariable=self.player_turn, width=20, borderwidth=2,
-                                      bg='white', font=('COMIC SANS MS', 15))
-            player_turn_label.grid(row=2, column=8)
+        #     input_player2_name = Entry(self.root, textvariable=self.player_2_name, width=10, borderwidth=2,
+        #                                bg='white', font=('COMIC SANS MS', 15))
+        #     input_player2_name.grid(row=1, column=8)
+
+        #     self.label_player_turn = Label(self.root, text=self.player_turn_change.get(),
+        #                                    font=('COMIC SANS MS', 15, 'bold'), borderwidth=0, background='white')
+        #     self.label_player_turn.grid(row=2, column=8)
 
         # Create the "show score" button
         global show_score_btn_pic
@@ -261,6 +294,10 @@ class Game:
         new_btn.grid(row=3, column=8)
 
     def createBoard(self):
+
+        if(self.is_against_pc.get() == False):
+            self.clearLabel()
+
         # Init the row and column
         row = 0
         column = 0
