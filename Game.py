@@ -44,7 +44,7 @@ class Game:
         # destroy all "label_player_turn" in the root
         for widget in self.root.winfo_children():
             if(type(widget) == Label):
-                if(((widget.cget('text') != "Player 1 name: " and widget.cget('text') != "Player 2 name: ")) and (str(widget.cget('text')).isdigit()) == False):
+                if(((widget.cget('text') != "Player 1 name: " and widget.cget('text') != "Player 2 name: ")) and ((str(widget.cget('text')).isdigit()) == False)) and (widget.cget('text') != ""):
                     widget.destroy()
         self.showNames()
 
@@ -56,11 +56,11 @@ class Game:
 
             input_player2_name = Entry(self.root, textvariable=self.player_2_name, width=10, borderwidth=2,
                                        bg='white', font=('COMIC SANS MS', 15))
-            input_player2_name.grid(row=1, column=8)
+            input_player2_name.grid(row=2, column=8)
 
             self.label_player_turn = Label(self.root, text=f"{self.player_turn_change.get()}'s turn",
                                            font=('COMIC SANS MS', 15, 'bold'), borderwidth=0, background='white')
-            self.label_player_turn.grid(row=2, column=8)
+            self.label_player_turn.grid(row=1, column=8)
 
     # Coin toss - who will start playing first.
     # Human VS human - player 1 always "X", player 2 always "O".
@@ -169,6 +169,7 @@ class Game:
 # 1. If you recognize that there are two "O"s in an array (one of the wining array), you must place the "O" in the empty place in the array.
 # 2. If you recognize that there are one "X" in an array (one of the wining array), you must place the "O" in one of the empty places in the array.
 
+
     def pcLogic(self):
 
         potential_attack_index = -1
@@ -252,7 +253,6 @@ class Game:
 
 # Function that creates a new game (scores are set to 0).
 
-
     def newGame(self):
         self.player_turn_change.set(self.player1.get())
         self.clearBoard()
@@ -264,7 +264,6 @@ class Game:
 
 # Function that shows the scores (when button is clicked).
 
-
     def showScore(self):
         score_player1_label = Label(self.root, textvariable=self.player_1_score, width=2, borderwidth=2,
                                     bg='white', font=('COMIC SANS MS', 15))
@@ -272,10 +271,11 @@ class Game:
 
         score_player2_label = Label(self.root, textvariable=self.player_2_score, width=2, borderwidth=2,
                                     bg='white', font=('COMIC SANS MS', 15))
-        score_player2_label.grid(row=1, column=9)
+        score_player2_label.grid(row=2, column=9)
 
 
 # This fucntion creates the widgets - all the buttons and the labels.
+
 
     def createWidgets(self):
         # Create the label + input for player 1
@@ -293,7 +293,14 @@ class Game:
         ) else "Player 2 name: "
         label_player2_name = Label(self.root, text=player_2_name_label,
                                    font=('COMIC SANS MS', 15, 'bold'), borderwidth=0, background='white')
-        label_player2_name.grid(row=1, column=7)
+        label_player2_name.grid(row=2, column=7)
+
+        # VS picture
+        global vs_pic
+        vs_pic = PhotoImage(file="images/VS.png")
+        vs_pic_label = Label(self.root, image=vs_pic,
+                             borderwidth=0, background='white', text="")
+        vs_pic_label.grid(row=1, column=7)
 
         # Create the "show score" button
         global show_score_btn_pic

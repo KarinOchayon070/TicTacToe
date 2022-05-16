@@ -15,6 +15,7 @@ class MainScreen (Game):
         self.root.title("Tic Tac Toe")
         self.root.configure(background='white')
         self.root.geometry('700x550')
+        self.root.resizable(width=False, height=False)
         self.img = PhotoImage(file="images/title.png")
         self.label = Label(self.root, image=self.img, borderwidth=0)
         self.label.grid(row=0, column=0, columnspan=2)
@@ -46,6 +47,7 @@ class MainScreen (Game):
     # Home page of the game (main screen - buttons and title).
     def createHomeScreen(self):
         # Import the images (buttons) using PhotoImage function
+
         global human_vs_human_image, human_vs_pc_image
         human_vs_human_image = PhotoImage(file="images/humanVShuman.png")
         human_vs_pc_image = PhotoImage(file="images/humanVSpc.png")
